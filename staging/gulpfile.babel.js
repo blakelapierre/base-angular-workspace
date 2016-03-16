@@ -113,7 +113,7 @@ gulp.task('styles', ['less:concat']);
 
 gulp.task('less:concat', ['less:debug'],
   () => pipe([
-    gulp.src(['./.dev/tmp.css', './.dev/sprites.css'])
+    gulp.src(paths.dev.styles)
     ,p('less:concat:pre')
     ,concat('app.css')
     ,p('less:concat:post')
@@ -218,36 +218,39 @@ gulp.task('rev',
       ]))
 ))('clean');
 
-const paths = {
+const paths = ((base) => ({
   src: {
-    $: './src',
-    app: ['./src/app.js'],
-    less: ['src/**/*.less'],
-    html: ['./src/index.html'],
-    images: ['./src/**/*.{svg,gif,png,jpg}'],
-    scripts: ['src/**/*.js'],
-    templates: ['src/modules/**/template.html'],
-    vendor: ['!./node_modules/*/node_modules/**']
-            .concat(_.map(dependencies, (version, dependency) => { return `./node_modules/${dependency}/**/*.js`; } )),
+    $: `${base}/src`,
+    app: [`${base}/src/app.js`],
+    less: [`${base}/src/**/*.less`],
+    html: [`${base}/src/index.html`],
+    images: [`${base}/src/**/*.{svg,gif,png,jpg}`],
+    scripts: [`${base}/src/**/*.js`],
+    templates: [`${base}/src/modules/**/template.html`],
+    vendor: [`!./node_modules/*/node_modules/**`]
+            .concat(_.map(dependencies, (version, dependency) => `./node_modules/${dependency}/**/*.js`)),
   },
   dev: {
-    $: './.dev',
-    $all: './.dev/**',
-    app: './.dev/app.js',
-    css: './.dev/app.css',
-    html: './.dev/index.html',
-    images: './.dev/**/*.{svg,gif,png,jpg}',
-    sprites: './.dev/sprites.png',
-    vendor: './.dev/vendor.js'
+    $: `${base}/.dev`,
+    $all: `${base}/.dev/**`,
+    app: `${base}/.dev/app.js`,
+    css: `${base}/.dev/app.css`,
+    html: `${base}/.dev/index.html`,
+    images: `${base}/.dev/**/*.{svg,gif,png,jpg}`,
+    sprites: `${base}/.dev/sprites.png`,
+    vendor: `${base}/.dev/vendor.js`,
+    styles: [`${base}/.dev/tmp.css`, `${base}/.dev/sprites.css`]
   },
   rev: {
-    $: './.rev',
-    $all: './.rev/**'
+    $: `${base}/.rev`,
+    $all: `${base}/.rev/**`
   },
   dist: {
-    $: './.dist',
-    app: './.dist/app.js',
-    css: './.dist/app.css',
-    html: './.dist/index.html'
+    $: `${base}/.dist`,
+    app: `${base}/.dist/app.js`,
+    css: `${base}/.dist/app.css`,
+    html: `${base}/.dist/index.html`
   }
-};
+}))(`./projects/${process.argv[4]}` || '.');
+
+console.log({paths, argv:process.argv});

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+unlink staging/projects/$1

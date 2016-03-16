@@ -1,0 +1,20 @@
+#!/bin/sh
+
+#!! not ready for use !!
+
+trap "kill 0" SIGINT
+
+echo $1
+(cd staging && gulp dev -p "$1") >&1 &
+
+inotifywait -qme close_write staging | while read path event file; do
+  echo $file
+  if [ "$file" = "gulpfile.babel.js" ]; then
+     # this doesn't seem to kill the old jobs...
+    kill -s 9 $(jobs -p)
+    (cd staging && gulp dev -p "$1") >&1
+  elif [ "$file" = "dev_project" ]; then
+    kill -s 9 $(jobs -p)
+    exec ./dev_project $*
+  fi
+done

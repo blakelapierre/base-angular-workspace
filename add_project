@@ -1,0 +1,9 @@
+#!/bin/sh
+
+source_dir=$(cd .. && pwd)/$1
+
+if [ -d "$source_dir" ]; then
+  mkdir -p staging/projects && ln -s "$source_dir" staging/projects/$(basename $1)
+else
+  echo "No $source_dir"
+fi
