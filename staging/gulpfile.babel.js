@@ -252,5 +252,3 @@ const paths = ((base) => ({
     html: `${base}/.dist/index.html`
   }
 }))(`./projects/${process.argv[4]}` || '.');
-
-console.log({paths, argv:process.argv});
