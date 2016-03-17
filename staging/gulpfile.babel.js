@@ -57,10 +57,10 @@ gulp.task('dev', cb => {
   gulp.watch(src.html,      ['html']);
   gulp.watch(src.images,    ['images']);
   gulp.watch(src.less,      ['styles'])
-      .on('change', event => {
-        if (event.type === 'deleted') {
-          delete cached.caches['styles'][event.path];
-          remember.forget('styles', event.path);
+      .on('change', ({type, path}) => {
+        if (type === 'deleted') {
+          delete cached.caches['styles'][path];
+          remember.forget('styles', path);
         }
       });
 });
