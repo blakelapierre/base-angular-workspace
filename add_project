@@ -1,6 +1,8 @@
 #!/bin/sh
 
-source_dir=$(cd .. && pwd)/$1
+source_dir=$(pwd)/$1
+
+echo $source_dir
 
 if [ -d "$source_dir" ]; then
   mkdir -p staging/projects && ln -s "$source_dir" staging/projects/$(basename $1)
