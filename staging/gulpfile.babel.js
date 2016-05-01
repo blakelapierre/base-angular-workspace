@@ -38,10 +38,15 @@ let p = name => print(file => console.log(name, file));
 
 gulp.task('default', ['build']);
 
-gulp.task('build', sequence(['clean:rev', 'clean:dist'],
-                            ['js:vendor', 'js:app', 'html', 'images', 'styles', 'fonts'],
-                            ['minify:css', 'minify:html', 'minify:js', 'minify:images'],
+gulp.task('build', sequence('clean',
+                            'application',
+                            'minify',
                             'rev'));
+
+gulp.task('clean',  ['clean:rev', 'clean:dist']);
+gulp.task('application', ['js', 'html', 'images', 'styles', 'fonts']);
+gulp.task('js',     ['js:vendor', 'js:app']);
+gulp.task('minify', ['minify:css', 'minify:html', 'minify:js', 'minify:images']);
 
 gulp.task('dev', cb => {
   const {src} = paths;
@@ -51,18 +56,23 @@ gulp.task('dev', cb => {
           'styles',
           'browser-sync')(cb);
 
-  gulp.watch(src.vendor,    ['js:vendor']);
-  gulp.watch(src.scripts,   ['js:app']);
-  gulp.watch(src.templates, ['js:app']);
-  gulp.watch(src.html,      ['html']);
-  gulp.watch(src.images,    ['images']);
-  gulp.watch(src.less,      ['styles'])
-      .on('change', ({type, path}) => {
-        if (type === 'deleted') {
-          delete cached.caches['styles'][path];
-          remember.forget('styles', path);
-        }
-      });
+  watch(src.vendor,    ['js:vendor']);
+  watch(src.scripts,   ['js:app']);
+  watch(src.templates, ['js:app']);
+  watch(src.html,      ['html']);
+  watch(src.images,    ['images']);
+  watch(src.less,      ['styles'])
+    .on('change', ({type, path}) => {
+      if (type === 'deleted') {
+        delete cached.caches['styles'][path];
+        remember.forget('styles', path);
+      }
+    });
+
+  function watch(folder, tasks) {
+    console.log(`Watching ${folder}`);
+    return gulp.watch(folder, tasks);
+  }
 });
 
 gulp.task('browser-sync',
@@ -227,8 +237,8 @@ const paths = ((base) => ({
     images: [`${base}/src/**/*.{svg,gif,png,jpg}`],
     scripts: [`${base}/src/**/*.js`],
     templates: [`${base}/src/modules/**/template.html`],
-    vendor: [`!./node_modules/*/node_modules/**`]
-            .concat(_.map(dependencies, (version, dependency) => `./node_modules/${dependency}/**/*.js`)),
+    vendor: [`!${base}/node_modules/*/node_modules/**`]
+            .concat(_.map(dependencies, (version, dependency) => `${base}/node_modules/${dependency}/**/*.js`)),
   },
   dev: {
     $: `${base}/.dev`,
