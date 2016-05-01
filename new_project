@@ -1,0 +1,13 @@
+#!/bin/bash
+
+project_name=$(basename $1)
+
+mkdir -p .projects/$project_name && \
+
+(cd .projects/$project_name && printf "$project_name {\n # {\n }\n}" > "$project_name.AngularProject") && \
+
+./add_project .projects/"$1" && \
+
+./dev_project "$project_name"
+
+#clone and go!
